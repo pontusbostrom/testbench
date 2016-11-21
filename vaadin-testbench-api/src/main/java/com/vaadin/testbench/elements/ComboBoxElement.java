@@ -48,13 +48,10 @@ public class ComboBoxElement extends AbstractSelectElement {
         getInputField().clear();
         sendInputFieldKeys(text);
 
-        List<String> popupSuggestions = getPopupSuggestions();
-        if (popupSuggestions.size() != 0
-                && text.equals(popupSuggestions.get(0))) {
-            getSuggestionPopup().findElement(By.tagName("td")).click();
+        if (!selectSuggestion(text)) {
+            throw new NoSuchElementException(
+                    "No option with text '" + text + "' found");
         }
-        throw new NoSuchElementException(
-                "No option with text '" + text + "' found");
     }
 
     /**
@@ -76,15 +73,22 @@ public class ComboBoxElement extends AbstractSelectElement {
         }
 
         do {
-            for (WebElement suggestion : getPopupSuggestionElements()) {
-                if (text.equals(suggestion.getText())) {
-                    suggestion.click();
-                    return;
-                }
+            if (selectSuggestion(text)) {
+                return;
             }
         } while (openNextPage());
         throw new NoSuchElementException(
                 "No option with text '" + text + "' found");
+    }
+
+    private boolean selectSuggestion(String text) {
+        for (WebElement suggestion : getPopupSuggestionElements()) {
+            if (text.equals(suggestion.getText())) {
+                suggestion.click();
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isReadOnly(WebElement elem) {
