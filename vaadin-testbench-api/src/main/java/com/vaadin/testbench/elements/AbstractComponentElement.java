@@ -12,11 +12,14 @@
  */
 package com.vaadin.testbench.elements;
 
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 
 import com.vaadin.testbench.By;
+import com.vaadin.testbench.TestBenchElement;
 import com.vaadin.testbench.elementsbase.AbstractElement;
 import com.vaadin.testbench.elementsbase.ServerClass;
+import com.vaadin.testbench.parallel.BrowserUtil;
 
 @ServerClass("com.vaadin.ui.AbstractComponent")
 public class AbstractComponentElement extends AbstractElement {
@@ -73,6 +76,17 @@ public class AbstractComponentElement extends AbstractElement {
         }
 
         return null;
+    }
+
+    /**
+     * Click the button or activate it using space if using IE.
+     */
+    protected static void activateButton(WebElement e) {
+        if (BrowserUtil.isIE(((TestBenchElement) e).getCapabilities())) {
+            e.sendKeys(Keys.SPACE);
+        } else {
+            e.click();
+        }
     }
 
     public class ReadOnlyException extends RuntimeException {
